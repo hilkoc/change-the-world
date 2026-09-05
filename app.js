@@ -1,6 +1,17 @@
-/* Swipe deck: swipe left for next, right for back.
-   Also: arrow keys, space, Home/End, the arrow buttons, the dots,
-   the contents menu, #hash deep links and the browser back button. */
+/* Swipe deck, two axes.
+
+   Horizontal: swipe left and right for next and previous page.
+   Vertical:   swipe up at the bottom of a page opens its proof sheet,
+               swipe down closes the sheet, or skips to the next chapter.
+
+   Also: arrow keys, space, Home/End, the arrow buttons, the dots, the chapter
+   rail, the contents menu, #hash deep links and the browser back button.
+
+   Touch is handled through touch events rather than pointer events: mobile
+   Chrome hands the gesture to the scrolling page and fires pointercancel after
+   a single pointermove, so a pointer-only implementation never sees the swipe.
+   A non-passive touchmove that calls preventDefault once the gesture is ours
+   keeps it. Pointer events cover mouse and pen only. */
 
 (function () {
   "use strict";
@@ -8,51 +19,83 @@
   var deck = document.getElementById("deck");
   var track = document.getElementById("track");
   var dotsEl = document.getElementById("dots");
+  var railEl = document.getElementById("rail");
   var prevBtn = document.getElementById("prevBtn");
   var nextBtn = document.getElementById("nextBtn");
-  var progressFill = document.getElementById("progressFill");
+  var proofBtn = document.getElementById("proofBtn");
+  var progressEl = document.getElementById("progress");
   var counter = document.getElementById("counter");
   var live = document.getElementById("live");
   var menu = document.getElementById("menu");
   var menuBtn = document.getElementById("menuBtn");
   var menuClose = document.getElementById("menuClose");
   var menuList = document.getElementById("menuList");
+  var sheet = document.getElementById("proofSheet");
+  var sheetPanel = document.getElementById("sheetPanel");
+  var sheetBody = document.getElementById("sheetBody");
+  var sheetTitle = document.getElementById("sheetTitle");
+  var sheetClose = document.getElementById("sheetClose");
 
   var STORE_KEY = "wctw:pledges";
+  var DAYS = ["Today", "Tomorrow", "This weekend", "Monday"];
+
   var index = 0;
   var pageEls = [];
   var dotEls = [];
   var menuBtns = [];
+  var railBtns = [];
+  var segFills = [];
+  var chapters = [];
   var suppressHash = false;
+  var sheetOpen = false;
 
-  /* ---------- pledge storage ---------- */
+  var reduceMotion = window.matchMedia
+    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  function loadPledges() {
+  /* ---------- pledge storage ----------
+     v1 stored a bare array of ids. v2 keeps the start day alongside. */
+
+  function loadStore() {
+    var empty = { v: 2, ids: [], day: null };
     try {
       var raw = window.localStorage.getItem(STORE_KEY);
-      return raw ? JSON.parse(raw) : [];
+      if (!raw) return empty;
+      var data = JSON.parse(raw);
+      if (Array.isArray(data)) return { v: 2, ids: data, day: null };
+      if (data && Array.isArray(data.ids)) return data;
+      return empty;
     } catch (e) {
-      return [];
+      return empty;
     }
   }
 
-  function savePledges(list) {
+  function saveStore(data) {
     try {
-      window.localStorage.setItem(STORE_KEY, JSON.stringify(list));
+      window.localStorage.setItem(STORE_KEY, JSON.stringify(data));
     } catch (e) {
       /* private mode or file:// restrictions: pledges just do not persist */
     }
   }
 
+  function pledgedIds() { return loadStore().ids; }
+
+  function isPledged(id) { return pledgedIds().indexOf(id) !== -1; }
+
   function togglePledge(id) {
-    var list = loadPledges();
-    var at = list.indexOf(id);
-    if (at === -1) list.push(id); else list.splice(at, 1);
-    savePledges(list);
+    var data = loadStore();
+    var at = data.ids.indexOf(id);
+    if (at === -1) data.ids.push(id); else data.ids.splice(at, 1);
+    saveStore(data);
     return at === -1;
   }
 
-  /* ---------- building ---------- */
+  function setDay(day) {
+    var data = loadStore();
+    data.day = day;
+    saveStore(data);
+  }
+
+  /* ---------- small helpers ---------- */
 
   function el(tag, cls, text) {
     var node = document.createElement(tag);
@@ -61,10 +104,131 @@
     return node;
   }
 
+  function say(text) { live.textContent = text; }
+
+  function buzz(ms) {
+    if (navigator.vibrate) {
+      try { navigator.vibrate(ms); } catch (e) { /* ignore */ }
+    }
+  }
+
+  function currentPage() { return PAGES[index]; }
+
+  function currentSection() { return pageEls[index]; }
+
+  /* ---------- chapters ---------- */
+
+  function buildChapters() {
+    CHAPTERS.forEach(function (chapter) {
+      var pages = [];
+      PAGES.forEach(function (page, i) {
+        if (page.chapter === chapter.id) pages.push(i);
+      });
+      if (!pages.length) return;
+      chapters.push({
+        id: chapter.id,
+        label: chapter.label,
+        first: pages[0],
+        count: pages.length,
+        accent: PAGES[pages[0]].accent
+      });
+    });
+  }
+
+  function chapterAt(i) {
+    for (var c = chapters.length - 1; c >= 0; c--) {
+      if (i >= chapters[c].first) return c;
+    }
+    return 0;
+  }
+
+  function nextChapter() {
+    var c = chapterAt(index);
+    if (c >= chapters.length - 1) {
+      goTo(PAGES.length - 1, true);
+      return;
+    }
+    goTo(chapters[c + 1].first, true);
+    say("Chapter: " + chapters[c + 1].label);
+  }
+
+  function prevChapter() {
+    var c = chapterAt(index);
+    /* not at the top of this chapter? go there first */
+    if (index > chapters[c].first) { goTo(chapters[c].first, true); return; }
+    if (c === 0) { goTo(0, true); return; }
+    goTo(chapters[c - 1].first, true);
+    say("Chapter: " + chapters[c - 1].label);
+  }
+
+  /* ---------- proof ---------- */
+
+  function allProof() {
+    var seen = {};
+    var out = [];
+    PAGES.forEach(function (page) {
+      (page.proof || []).forEach(function (item) {
+        if (seen[item.url]) return;
+        seen[item.url] = true;
+        out.push(item);
+      });
+    });
+    return out;
+  }
+
+  function fillSheet(page) {
+    sheetTitle.textContent = page.proof ? "Proof: " + page.menu : "Proof";
+    sheetBody.innerHTML = "";
+
+    if (!page.proof || !page.proof.length) {
+      sheetBody.appendChild(el("p", "sheet-empty", "No figures on this page, so nothing to check. Every number in the deck is on the sources page."));
+      return;
+    }
+
+    page.proof.forEach(function (item) {
+      var block = el("div", "proof-item");
+      block.appendChild(el("p", "proof-claim", item.claim));
+      var a = el("a", "proof-source", item.source);
+      a.href = item.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      block.appendChild(a);
+      sheetBody.appendChild(block);
+    });
+  }
+
+  function openSheet() {
+    if (sheetOpen) return;
+    fillSheet(currentPage());
+    sheet.hidden = false;
+    sheet.setAttribute("aria-hidden", "false");
+    sheetPanel.style.transform = "";
+    deck.inert = true;
+    sheetOpen = true;
+    buzz(6);
+    sheetClose.focus();
+    say("Proof open");
+  }
+
+  function closeSheet(refocus) {
+    if (!sheetOpen) return;
+    sheet.hidden = true;
+    sheet.setAttribute("aria-hidden", "true");
+    sheetPanel.style.transform = "";
+    deck.inert = false;
+    sheetOpen = false;
+    if (refocus) proofBtn.focus();
+    say("Proof closed");
+  }
+
+  /* ---------- page building ---------- */
+
   function addStat(parent, stat) {
     if (!stat) return;
     var wrap = el("div", "stat");
-    wrap.appendChild(el("p", "stat-value", stat.value));
+    var value = el("p", "stat-value", stat.value);
+    value.dataset.value = stat.value;
+    wrap.appendChild(value);
     wrap.appendChild(el("p", "stat-label", stat.label));
     parent.appendChild(wrap);
   }
@@ -78,32 +242,64 @@
     parent.appendChild(wrap);
   }
 
-  function addPledgeButton(parent, page) {
-    var picked = loadPledges().indexOf(page.id) !== -1;
+  function addAsk(parent, page) {
+    var picked = isPledged(page.id);
+
+    if (page.ask) parent.appendChild(el("p", "ask", page.ask));
+
     var btn = el("button", "pledge-btn");
     btn.type = "button";
     btn.setAttribute("aria-pressed", picked ? "true" : "false");
 
-    var tick = el("span", "tick", picked ? "✓" : "+");
+    var tick = el("span", "tick", "✓");
+    tick.hidden = !picked;
     btn.appendChild(tick);
-    btn.appendChild(el("span", null, "I am in"));
+    var label = el("span", null, picked ? "I am in" : "Yes, I am in");
+    btn.appendChild(label);
+
+    var plan = el("p", "plan", page.plan || "");
+    plan.hidden = !picked || !page.plan;
 
     btn.addEventListener("click", function () {
       var now = togglePledge(page.id);
       btn.setAttribute("aria-pressed", now ? "true" : "false");
-      tick.textContent = now ? "✓" : "+";
-      say(now ? "Added: " + page.pledge : "Removed: " + page.pledge);
+      tick.hidden = !now;
+      label.textContent = now ? "I am in" : "Yes, I am in";
+      plan.hidden = !now || !page.plan;
+      if (now) buzz(10);
+      say(now ? "Yes to: " + page.pledge : "Removed: " + page.pledge);
     });
 
     var row = el("div", "btn-row");
     row.appendChild(btn);
     parent.appendChild(row);
+    parent.appendChild(plan);
+  }
+
+  function sharePledges(chosen, day) {
+    var lines = chosen.map(function (p) { return "- " + p.pledge; });
+    var text = "I am starting these " + (day ? day.toLowerCase() : "this week") + ":\n"
+      + lines.join("\n") + "\n\nPick yours:";
+    var url = location.href.split("#")[0];
+
+    if (navigator.share) {
+      navigator.share({ title: document.title, text: text, url: url })
+        .catch(function () { /* user dismissed */ });
+      return;
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text + " " + url).then(function () {
+        say("Copied. Now paste it to one person.");
+      }, function () { say("Could not copy"); });
+      return;
+    }
+    say("Copy the link from the address bar and send it to one person.");
   }
 
   function renderPledgePage(section, page) {
-    var picked = loadPledges();
+    var data = loadStore();
     var chosen = PAGES.filter(function (p) {
-      return p.pledge && picked.indexOf(p.id) !== -1;
+      return p.pledge && data.ids.indexOf(p.id) !== -1;
     });
 
     section.innerHTML = "";
@@ -124,24 +320,50 @@
     var list = el("ul", "pledge-list");
     chosen.forEach(function (p) {
       var li = el("li");
-      li.appendChild(el("span", "tick", "✓"));
-      li.appendChild(el("span", null, p.pledge));
+      var head = el("div", "pledge-head");
+      head.appendChild(el("span", "tick", "✓"));
+      head.appendChild(el("span", null, p.pledge));
+      li.appendChild(head);
+      if (p.plan) li.appendChild(el("p", "plan-line", p.plan));
       list.appendChild(li);
     });
     inner.appendChild(list);
 
+    inner.appendChild(el("p", "day-title", "Start when?"));
+    var chips = el("div", "chips");
+    DAYS.forEach(function (day) {
+      var chip = el("button", "chip", day);
+      chip.type = "button";
+      chip.setAttribute("aria-pressed", data.day === day ? "true" : "false");
+      chip.addEventListener("click", function () {
+        setDay(day);
+        renderPledgePage(section, page);
+        buzz(10);
+        say("Starting " + day.toLowerCase());
+      });
+      chips.appendChild(chip);
+    });
+    inner.appendChild(chips);
+
     inner.appendChild(el("p", "body", page.outro));
+
+    var row = el("div", "btn-row");
+    var share = el("button", "pledge-btn", "Send this to one person");
+    share.type = "button";
+    share.addEventListener("click", function () { sharePledges(chosen, data.day); });
+    row.appendChild(share);
+    inner.appendChild(row);
 
     var reset = el("button", "restart", "Clear my picks");
     reset.type = "button";
     reset.addEventListener("click", function () {
-      savePledges([]);
+      saveStore({ v: 2, ids: [], day: null });
       renderPledgePage(section, page);
       say("Picks cleared");
     });
-    var row = el("div", "btn-row");
-    row.appendChild(reset);
-    inner.appendChild(row);
+    var resetRow = el("div", "btn-row");
+    resetRow.appendChild(reset);
+    inner.appendChild(resetRow);
   }
 
   function buildPage(page, i) {
@@ -167,7 +389,7 @@
       if (page.hint) {
         var hint = el("p", "hint");
         hint.appendChild(el("span", "arrow", "←"));
-        hint.appendChild(el("span", null, "Swipe left to start"));
+        hint.appendChild(el("span", null, "Swipe left to start. Swipe up for the proof."));
         inner.appendChild(hint);
       }
       return section;
@@ -179,9 +401,9 @@
     if (page.kind === "sources") {
       inner.appendChild(el("p", "stat-label", page.lede));
       var list = el("ul", "sources");
-      page.items.forEach(function (item) {
+      allProof().forEach(function (item) {
         var li = el("li");
-        var a = el("a", null, item.label);
+        var a = el("a", null, item.source);
         a.href = item.url;
         a.target = "_blank";
         a.rel = "noopener noreferrer";
@@ -194,6 +416,7 @@
 
     addStat(inner, page.stat);
     addBody(inner, page.body);
+    if (page.norm) inner.appendChild(el("p", "norm", page.norm));
     if (page.note) inner.appendChild(el("p", "note", page.note));
 
     if (page.todo) {
@@ -207,12 +430,36 @@
       inner.appendChild(box);
     }
 
-    if (page.pledge) addPledgeButton(inner, page);
+    if (page.pledge) addAsk(inner, page);
 
     return section;
   }
 
   function build() {
+    buildChapters();
+
+    chapters.forEach(function (chapter, c) {
+      var btn = el("button", "rail-btn");
+      btn.type = "button";
+      btn.title = chapter.label;
+      btn.setAttribute("aria-label", "Chapter: " + chapter.label);
+      btn.style.setProperty("--accent", chapter.accent);
+      btn.appendChild(el("span", "rail-label", chapter.label));
+      btn.addEventListener("click", function () { goTo(chapter.first, true); });
+      railEl.appendChild(btn);
+      railBtns.push(btn);
+
+      var seg = el("div", "seg");
+      seg.style.flexGrow = String(chapter.count);
+      seg.style.setProperty("--accent", chapter.accent);
+      var fill = el("div", "seg-fill");
+      seg.appendChild(fill);
+      progressEl.appendChild(seg);
+      segFills.push(fill);
+      /* c is unused beyond ordering, kept for readability */
+      void c;
+    });
+
     PAGES.forEach(function (page, i) {
       var section = buildPage(page, i);
       pageEls.push(section);
@@ -228,6 +475,9 @@
       dotEls.push(dot);
 
       var menuItem = document.createElement("li");
+      if (chapters.length && PAGES[i - 1] && PAGES[i - 1].chapter !== page.chapter) {
+        menuItem.className = "menu-break";
+      }
       var link = el("button", null, page.menu);
       link.type = "button";
       link.addEventListener("click", function () {
@@ -240,9 +490,40 @@
     });
   }
 
-  /* ---------- navigation ---------- */
+  /* ---------- stat count-up ---------- */
 
-  function say(text) { live.textContent = text; }
+  function countUp(section) {
+    if (reduceMotion) return;
+    var node = section.querySelector(".stat-value");
+    if (!node) return;
+
+    /* only animate a value holding exactly one number: "537,719", "£3,000",
+       "2.4 t". Ranges like "80-90%" or "10 of 16" are left alone. */
+    var match = /^([^\d]*)(\d[\d.,]*)([^\d]*)$/.exec(node.dataset.value || "");
+    if (!match) return;
+
+    var digits = match[2];
+    var target = parseFloat(digits.replace(/,/g, ""));
+    if (!isFinite(target) || target <= 0) return;
+
+    var decimals = digits.indexOf(".") === -1 ? 0 : digits.length - digits.indexOf(".") - 1;
+    var grouped = digits.indexOf(",") !== -1;
+    var start = performance.now();
+    var duration = 520;
+
+    function frame(now) {
+      var t = Math.min(1, (now - start) / duration);
+      var eased = 1 - Math.pow(1 - t, 3);
+      var value = (target * eased).toFixed(decimals);
+      if (grouped) value = Number(value).toLocaleString("en-US");
+      node.textContent = match[1] + value + match[3];
+      if (t < 1 && node.isConnected) requestAnimationFrame(frame);
+      else node.textContent = node.dataset.value;
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- navigation ---------- */
 
   function setHash(id, push) {
     var hash = "#" + id;
@@ -262,15 +543,26 @@
     track.style.transform = "translate3d(" + px + "px, 0, 0)";
   }
 
+  function updateProgress() {
+    var here = chapterAt(index);
+    chapters.forEach(function (chapter, c) {
+      var done = 0;
+      if (c < here) done = 1;
+      else if (c === here) done = (index - chapter.first + 1) / chapter.count;
+      segFills[c].style.width = (done * 100) + "%";
+      railBtns[c].setAttribute("aria-current", c === here ? "true" : "false");
+    });
+  }
+
   function goTo(i, push) {
     index = Math.max(0, Math.min(PAGES.length - 1, i));
     var page = PAGES[index];
 
+    if (sheetOpen) closeSheet(false);
+
     translate(-index * deck.clientWidth, true);
 
     document.documentElement.style.setProperty("--accent", page.accent);
-    progressFill.style.width = ((index + 1) / PAGES.length * 100) + "%";
-    progressFill.style.background = page.accent;
     counter.textContent = (index + 1) + " / " + PAGES.length;
 
     prevBtn.disabled = index === 0;
@@ -286,13 +578,20 @@
     pageEls.forEach(function (section, n) {
       section.setAttribute("aria-hidden", n === index ? "false" : "true");
       section.inert = n !== index;
+      section.style.transform = "";
     });
+
+    updateProgress();
 
     var current = pageEls[index];
     current.scrollTop = 0;
     if (current.dataset.dynamic) renderPledgePage(current, page);
+    countUp(current);
+
+    proofBtn.hidden = !(page.proof && page.proof.length);
 
     setHash(page.id, push);
+    if (push) buzz(6);
     say(page.menu + ". Page " + (index + 1) + " of " + PAGES.length + ".");
   }
 
@@ -309,18 +608,28 @@
     return isNaN(n) ? 0 : Math.max(0, Math.min(PAGES.length - 1, n - 1));
   }
 
-  /* ---------- swipe ----------
-     One gesture state machine, fed by touch events on touch screens and by
-     pointer events for mouse and pen. Touch is handled directly rather than
-     through pointer events: mobile Chrome hands the gesture to the scrolling
-     page and fires pointercancel after a single pointermove, so a pointer-only
-     implementation never sees the swipe. A non-passive touchmove that calls
-     preventDefault once the drag is horizontal keeps the gesture ours. */
+  /* ---------- gestures ----------
+     One state machine, fed by touch events and by pointer events for mouse.
+     intent is decided once per gesture and never changes mid-drag. */
 
   var startX = 0, startY = 0, startTime = 0, delta = 0;
-  var axis = null;      /* null = undecided, "x" = ours, "y" = the page scrolls */
+  var axis = null;      /* null = undecided, "x" or "y" */
+  var intent = null;    /* "page" | "sheet-open" | "sheet-close" | "chapter" */
   var active = false;
   var dragged = false;  /* a drag that ends on a link must not also click it */
+
+  function atBottom(section) {
+    return section.scrollTop + section.clientHeight >= section.scrollHeight - 2;
+  }
+
+  function verticalIntent(dy) {
+    var section = currentSection();
+    /* an open sheet only closes on a downward drag that starts at its top,
+       so the sheet's own list still scrolls */
+    if (sheetOpen) return (dy > 0 && sheetBody.scrollTop <= 0) ? "sheet-close" : null;
+    if (dy < 0) return atBottom(section) ? "sheet-open" : null;
+    return section.scrollTop <= 0 ? "chapter" : null;
+  }
 
   function gestureStart(x, y, time) {
     active = true;
@@ -330,6 +639,7 @@
     startTime = time;
     delta = 0;
     axis = null;
+    intent = null;
   }
 
   /* returns true once the drag belongs to the deck */
@@ -341,45 +651,101 @@
 
     if (axis === null) {
       if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return false;
-      axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      if (Math.abs(dx) > Math.abs(dy)) {
+        axis = "x";
+        intent = sheetOpen ? null : "page";
+      } else {
+        axis = "y";
+        intent = verticalIntent(dy);
+      }
+      if (!intent) { axis = "done"; return false; }
     }
-    if (axis !== "x") return false;
+    if (axis === "done") return false;
 
-    var width = deck.clientWidth;
-    var atEdge = (index === 0 && dx > 0) || (index === PAGES.length - 1 && dx < 0);
-    delta = atEdge ? dx * 0.3 : dx;
-    translate(-index * width + delta, false);
+    if (intent === "page") {
+      var width = deck.clientWidth;
+      var atEdge = (index === 0 && dx > 0) || (index === PAGES.length - 1 && dx < 0);
+      delta = atEdge ? dx * 0.3 : dx;
+      translate(-index * width + delta, false);
+      return true;
+    }
+
+    delta = dy;
+    if (intent === "sheet-open") {
+      var height = Math.max(1, sheetPanel.clientHeight);
+      var shown = Math.min(1, -dy / height);
+      sheet.hidden = false;
+      sheet.setAttribute("aria-hidden", "false");
+      sheetPanel.style.transform = "translate3d(0," + ((1 - shown) * 100) + "%,0)";
+    } else if (intent === "sheet-close") {
+      sheetPanel.style.transform = "translate3d(0," + Math.max(0, dy) + "px,0)";
+    } else if (intent === "chapter") {
+      currentSection().style.transform = "translate3d(0," + dy * 0.35 + "px,0)";
+    }
     return true;
   }
 
   function gestureEnd(time) {
     if (!active) return;
     active = false;
-    if (axis !== "x") { axis = null; return; }
+    var kind = intent;
+    var moved = delta;
     axis = null;
-    if (Math.abs(delta) > 8) dragged = true;
-
-    var width = deck.clientWidth;
-    var elapsed = Math.max(1, time - startTime);
-    var velocity = delta / elapsed;
-    var flick = Math.abs(velocity) > 0.45 && Math.abs(delta) > 24;
-
-    if (delta < 0 && (flick || -delta > width * 0.22)) next();
-    else if (delta > 0 && (flick || delta > width * 0.22)) prev();
-    else translate(-index * width, true);
-
+    intent = null;
     delta = 0;
+
+    if (!kind) return;
+    if (Math.abs(moved) > 8) dragged = true;
+
+    var elapsed = Math.max(1, time - startTime);
+    var velocity = moved / elapsed;
+    var flick = Math.abs(velocity) > 0.45 && Math.abs(moved) > 24;
+
+    if (kind === "page") {
+      var width = deck.clientWidth;
+      if (moved < 0 && (flick || -moved > width * 0.22)) next();
+      else if (moved > 0 && (flick || moved > width * 0.22)) prev();
+      else translate(-index * width, true);
+      return;
+    }
+
+    var height = deck.clientHeight;
+
+    if (kind === "sheet-open") {
+      sheetPanel.style.transform = "";
+      if (flick || -moved > height * 0.18) {
+        sheet.hidden = true;          /* let openSheet run its full setup */
+        openSheet();
+      } else {
+        sheet.hidden = true;
+        sheet.setAttribute("aria-hidden", "true");
+      }
+      return;
+    }
+
+    if (kind === "sheet-close") {
+      sheetPanel.style.transform = "";
+      if (flick || moved > height * 0.15) closeSheet(false);
+      return;
+    }
+
+    if (kind === "chapter") {
+      currentSection().style.transform = "";
+      if (flick || moved > height * 0.18) nextChapter();
+    }
   }
 
   /* the browser took the gesture: commit it if it had already gone far enough,
      otherwise snap back */
   function gestureCancel(time) {
     if (!active) return;
-    if (axis === "x" && Math.abs(delta) > 8) { gestureEnd(time); return; }
+    if (intent && Math.abs(delta) > 8) { gestureEnd(time); return; }
     active = false;
     axis = null;
+    intent = null;
     delta = 0;
     translate(-index * deck.clientWidth, true);
+    currentSection().style.transform = "";
   }
 
   function onTouchStart(e) {
@@ -406,7 +772,7 @@
 
   function onPointerMove(e) {
     if (e.pointerType === "touch" || !active) return;
-    if (gestureMove(e.clientX, e.clientY) && axis === "x") {
+    if (gestureMove(e.clientX, e.clientY) && intent === "page") {
       try { deck.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
     }
   }
@@ -432,7 +798,7 @@
 
   function closeMenu() {
     menu.hidden = true;
-    deck.inert = false;
+    deck.inert = sheetOpen;
     menuBtn.setAttribute("aria-expanded", "false");
   }
 
@@ -456,8 +822,22 @@
     e.stopPropagation();
   }, true);
 
+  /* the sheet listens on its own so a downward drag on it closes it */
+  sheet.addEventListener("touchstart", onTouchStart, { passive: true });
+  sheet.addEventListener("touchmove", onTouchMove, { passive: false });
+  sheet.addEventListener("touchend", onTouchEnd, { passive: true });
+  sheet.addEventListener("touchcancel", onTouchCancel, { passive: true });
+
   nextBtn.addEventListener("click", next);
   prevBtn.addEventListener("click", prev);
+  proofBtn.addEventListener("click", function () {
+    if (sheetOpen) closeSheet(true); else openSheet();
+  });
+  sheetClose.addEventListener("click", function () { closeSheet(true); });
+  sheet.addEventListener("click", function (e) {
+    if (e.target === sheet || e.target.dataset.close != null) closeSheet(true);
+  });
+
   menuBtn.addEventListener("click", openMenu);
   menuClose.addEventListener("click", closeMenu);
   menu.addEventListener("click", function (e) {
@@ -468,22 +848,30 @@
     if (e.metaKey || e.ctrlKey || e.altKey) return;
 
     if (e.key === "Escape") {
-      if (!menu.hidden) { closeMenu(); menuBtn.focus(); }
+      if (!menu.hidden) { closeMenu(); menuBtn.focus(); return; }
+      if (sheetOpen) { closeSheet(true); }
       return;
     }
     if (!menu.hidden) return;
 
     var tag = document.activeElement ? document.activeElement.tagName : "";
-    var typing = tag === "INPUT" || tag === "TEXTAREA";
-    if (typing) return;
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
 
     switch (e.key) {
       case "ArrowRight":
       case "PageDown":
+        if (sheetOpen) return;
         e.preventDefault(); next(); break;
       case "ArrowLeft":
       case "PageUp":
+        if (sheetOpen) return;
         e.preventDefault(); prev(); break;
+      case "ArrowUp":
+        e.preventDefault(); openSheet(); break;
+      case "ArrowDown":
+        e.preventDefault();
+        if (sheetOpen) closeSheet(true); else nextChapter();
+        break;
       case " ":
       case "Spacebar":
         if (document.activeElement === document.body) { e.preventDefault(); next(); }
@@ -494,15 +882,17 @@
         e.preventDefault(); goTo(PAGES.length - 1, true); break;
       case "m":
         e.preventDefault(); openMenu(); break;
+      case "p":
+        e.preventDefault(); if (sheetOpen) closeSheet(true); else openSheet(); break;
     }
   });
 
-  /* trackpad / shift-wheel horizontal scrolling */
+  /* trackpad and shift-wheel horizontal scrolling */
   var wheelLock = false;
   deck.addEventListener("wheel", function (e) {
     var dx = e.shiftKey ? e.deltaY : e.deltaX;
     if (Math.abs(dx) < 25 || Math.abs(dx) < Math.abs(e.deltaY) && !e.shiftKey) return;
-    if (wheelLock) return;
+    if (wheelLock || sheetOpen) return;
     wheelLock = true;
     window.setTimeout(function () { wheelLock = false; }, 550);
     if (dx > 0) next(); else prev();
