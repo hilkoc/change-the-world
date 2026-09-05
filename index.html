@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+<meta name="theme-color" content="#0b0f14">
+<meta name="color-scheme" content="dark">
+<title>We change the world!</title>
+<meta name="description" content="Small changes add up. Fourteen things you can start this week, with the numbers behind them.">
+<meta property="og:title" content="We change the world!">
+<meta property="og:description" content="Small changes add up. Fourteen things you can start this week, with the numbers behind them.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="progress" role="presentation"><div class="progress-fill" id="progressFill"></div></div>
+  <button class="topbtn" id="menuBtn" aria-label="Open contents" aria-expanded="false" aria-controls="menu">
+    <span class="burger" aria-hidden="true"></span>
+  </button>
+  <p class="counter" id="counter" aria-hidden="true">1 / 1</p>
+</header>
+
+<main id="deck" class="deck" aria-label="Presentation. Swipe left for the next page, right to go back.">
+  <div class="track" id="track"></div>
+</main>
+
+<p class="sr-only" id="live" aria-live="polite"></p>
+
+<nav class="controls" aria-label="Page navigation">
+  <button class="navbtn" id="prevBtn" aria-label="Previous page">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <ol class="dots" id="dots"></ol>
+  <button class="navbtn" id="nextBtn" aria-label="Next page">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</nav>
+
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Contents" hidden>
+  <div class="menu-panel">
+    <div class="menu-head">
+      <h2>Contents</h2>
+      <button class="closebtn" id="menuClose" aria-label="Close contents">&times;</button>
+    </div>
+    <ol class="menu-list" id="menuList"></ol>
+    <p class="menu-foot">Swipe left for next, right for back. Arrow keys work too.</p>
+  </div>
+</div>
+
+<script src="pages.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
