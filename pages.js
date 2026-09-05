@@ -17,220 +17,133 @@ const PAGES = [
     id: "you-matter",
     kind: "idea",
     accent: "#8ecae6",
-    menu: "Small changes add up",
-    eyebrow: "Why bother",
-    title: "Small changes add up.",
-    stat: { value: "25%", label: "of a household's carbon footprint can be cut by everyday household choices alone" },
+    menu: "Everyone waits for everyone else",
+    eyebrow: "Why nothing moves",
+    title: "Everyone is waiting for everyone else.",
+    stat: { value: "80–90%", label: "of people underestimate how many others already want change. Supporters outnumber opponents two to one." },
     body: [
-      "One person feels like a rounding error. That feeling is the main reason nothing changes.",
-      "But your footprint is not a mystery. It is a list of repeated decisions: what you eat, how you travel, what you buy, what you throw away.",
-      "Change the repeats and the total moves."
-    ]
+      "You vastly underestimate the impact of your own actions, and so take none. You are waiting for a law, a leader, a neighbour, anyone to move first.",
+      "So is everyone around you. People copy what they see. Therefore, the most important thing you can ever do in this world is; ",
+      "Go first, make positive changes, and loudly say why."
+    ],
+    note: "Your voice and actions matter, much more than you think."
   },
 
   {
     id: "contagious",
     kind: "idea",
     accent: "#a5d6a7",
-    menu: "Your behaviour is contagious",
-    eyebrow: "Why it multiplies",
-    title: "Your behaviour is contagious.",
-    stat: { value: "3", label: "degrees of separation — your choices reach friends of friends of friends" },
+    menu: "What you do spreads",
+    eyebrow: "Why it spreads",
+    title: "What you do spreads.",
+    stat: { value: "3", label: "steps out. Your habits reach your friends, their friends, and their friends' friends." },
     body: [
-      "Christakis and Fowler tracked habits through real social networks. They do not stop at the people you know.",
-      "When someone became obese, their friends were 57% more likely to follow. In randomised experiments, cooperation spread three degrees out.",
-      "You are never changing one life. You are changing a small crowd who will never know why."
+      "Habits do not stop with you. Follow real friend groups and you can watch them travel.",
+      "When one person put on weight, their friends were 57% more likely to follow. Cooperation moves the same way, three steps out.",
+      "You are never changing one life. You are changing a crowd you will never meet."
     ],
-    note: "Critics say part of this is clustering rather than pure influence. The experiments still show real spread."
+    note: "Some of that is people picking similar friends, not pure influence. The experiments still show real spread."
+  },
+
+  {
+    id: "talk",
+    kind: "action",
+    num: "01",
+    accent: "#ff7b00",
+    menu: "Say it out loud",
+    eyebrow: "Action 01",
+    title: "Say it out loud.",
+    stat: { value: "59%", label: "think recycling is their biggest move. It is not. Most people are aiming at the wrong thing." },
+    body: [
+      "People are guessing. One sentence from you fixes that.",
+      "Not a lecture. Say the reason once, keep it light, move on.",
+      "This is the one that multiplies everything else on the list."
+    ],
+    todo: [
+      "When someone asks, tell them straight. No sermon.",
+      "Post what worked, not what you gave up.",
+      "Cook for your friends. Nobody argues with good food."
+    ],
+    pledge: "Tell people why"
+  },
+
+  {
+    id: "friendly",
+    kind: "action",
+    num: "02",
+    accent: "#ffd166",
+    menu: "Be good to people",
+    eyebrow: "Action 02",
+    title: "Be good to people.",
+    stat: { value: "0 kg", label: "of CO2, zero money, zero effort — and it spreads just like everything else here" },
+    body: [
+      "A better world is not only a cooler one. It is one where people are decent to each other.",
+      "Kindness moves through a group. So does loneliness. You pick which one you hand out.",
+      "You are also asking people to change how they eat and travel. Nobody takes that from someone rude."
+    ],
+    todo: [
+      "Learn the name of the person who serves you.",
+      "Let the car in. Hold the door. Say thanks out loud.",
+      "Say the nice thing you were only thinking."
+    ],
+    pledge: "Be good to people"
+  },
+
+  {
+    id: "voice",
+    kind: "action",
+    num: "03",
+    accent: "#9d4edd",
+    menu: "Vote and speak up",
+    eyebrow: "Action 03",
+    title: "Vote. Then keep pushing.",
+    stat: { value: "1", label: "vote, one email, one meeting — this changes the default for everyone at once" },
+    body: [
+      "Your choices are set by what exists around you.",
+      "You can only take the train if there is a train. You can only order the veggie option if someone cooks one.",
+      "Doing it yourself is what makes you worth listening to. Then push for the rest."
+    ],
+    todo: [
+      "Vote. Local ones too — that is where transport and housing live.",
+      "Send one short email to your representative. Five minutes.",
+      "At work, ask about the canteen, travel policy, pension, energy."
+    ],
+    pledge: "Vote and speak up"
   },
 
   {
     id: "big-levers",
     kind: "idea",
     accent: "#ffb4a2",
-    menu: "Pull the big levers",
+    menu: "Some things count more",
     eyebrow: "Where to aim",
-    title: "Pull the big levers first.",
-    stat: { value: "2.4 t", label: "CO2e saved per year by living car-free — against 0.2 t for recycling as much as you can" },
+    title: "Some things count way more.",
+    stat: { value: "2.4 t", label: "of CO2 saved a year by living without a car. Recycling everything you own saves 0.2 t." },
     body: [
-      "59% of people surveyed thought recycling was their best climate move. For richer countries it ranks 7th out of 9.",
-      "The heavy hitters are diet, driving and flying. One transatlantic return flight is 1.6 tonnes.",
-      "Do the small things too. Just do not let them stand in for the big ones."
+      "59% of people think recycling is their best move. In rich countries it comes 7th out of 9.",
+      "The big ones are flying, driving and what you eat. One return flight across the Atlantic is 1.6 tonnes.",
+      "Do the small stuff too. Just do not let it stand in for the big stuff."
     ]
-  },
-
-  {
-    id: "beef",
-    kind: "action",
-    num: "01",
-    accent: "#ef476f",
-    menu: "Stop eating beef",
-    eyebrow: "Action 01",
-    title: "Stop eating beef.",
-    stat: { value: "60 kg", label: "CO2e per kg of beef — peas are about 1 kg" },
-    body: [
-      "The biggest single change on most plates. Nothing else in the supermarket is close.",
-      "Methane is 49% of beef's emissions. Water: 15,400 litres per kg, against 4,300 for chicken.",
-      "You do not have to be perfect. People who swapped only their beef cut their diet's footprint by roughly 48%."
-    ],
-    todo: [
-      "Swap beef for beans, lentils or chicken this week.",
-      "Order the other thing on the menu. Once. See if you miss it.",
-      "Burgers: mushroom, bean, or a decent plant patty."
-    ],
-    pledge: "No beef"
-  },
-
-  {
-    id: "packaging",
-    kind: "action",
-    num: "02",
-    accent: "#06d6a0",
-    menu: "Refuse over-packaging",
-    eyebrow: "Action 02",
-    title: "Refuse over-packaged food.",
-    stat: { value: "7", label: "pieces of plastic in one multipack of six small crisp bags" },
-    body: [
-      "A big bag holding six little bags is convenience sold as packaging. You pay more, get less food, bin seven wrappers.",
-      "Recycling will not save you here. Not buying it beats binning it well.",
-      "Every refusal is a message to a shop. Shelves follow tills."
-    ],
-    todo: [
-      "Buy the one big bag. Portion it into a jar.",
-      "Loose fruit and veg, never wrapped trays.",
-      "Carry a bag, a bottle, a cup. Refill."
-    ],
-    pledge: "No over-packaged food"
-  },
-
-  {
-    id: "friendly",
-    kind: "action",
-    num: "03",
-    accent: "#ffd166",
-    menu: "Be friendly",
-    eyebrow: "Action 03",
-    title: "Be friendly to people.",
-    stat: { value: "0 kg", label: "CO2, 0 money, 0 effort — and it spreads three degrees like everything else" },
-    body: [
-      "A better world is not only a cooler one. It is one where people are decent to each other.",
-      "Kindness travels through networks the way habits do. So does loneliness: it clusters and it spreads.",
-      "You are also asking people to change how they eat and travel. Nobody takes that from someone unpleasant."
-    ],
-    todo: [
-      "Learn the name of someone who serves you.",
-      "Let the car in. Hold the door. Say the thank you out loud.",
-      "Say the good thing you were only thinking."
-    ],
-    pledge: "Be friendly, on purpose"
-  },
-
-  {
-    id: "meat",
-    kind: "action",
-    num: "04",
-    accent: "#f4845f",
-    menu: "Stop eating meat",
-    eyebrow: "Action 04",
-    title: "Then stop eating meat.",
-    stat: { value: "0.8 t", label: "CO2e saved per year by moving to a plant-based diet" },
-    body: [
-      "Beef first, because it is the outlier. But the IPCC review is blunt: a plant-based diet is the most effective dietary change there is.",
-      "Meat sits roughly ten times above pulses per kilo, and land is the hidden half — less grazing means forest that never falls.",
-      "Flip the default. Vegetarian unless you decide otherwise, not meat unless you remember not to."
-    ],
-    todo: [
-      "Make plants the default at home. Meat becomes a decision.",
-      "Learn three meals you love that have no meat in them.",
-      "Cut the days down: five, then six, then most."
-    ],
-    pledge: "Eat plant-based"
-  },
-
-  {
-    id: "shower",
-    kind: "action",
-    num: "05",
-    accent: "#4cc9f0",
-    menu: "Shorter showers",
-    eyebrow: "Action 05",
-    title: "Take shorter showers.",
-    stat: { value: "150 L", label: "for one 10-minute shower at a typical 15 L/min shower head" },
-    body: [
-      "The water matters. The energy to heat it matters more.",
-      "Typical heads run 12 to 15 litres a minute. The average US shower is 7.8 minutes and about 60 litres.",
-      "Four minutes off, daily, is tens of thousands of litres a year. This one pays you back."
-    ],
-    todo: [
-      "Play one song. Be out when it ends.",
-      "Fit a low-flow head: 6 to 8 L/min, same feel, half the water.",
-      "Tap off while you soap, shave or brush. Fix the dripping one."
-    ],
-    pledge: "Short showers"
-  },
-
-  {
-    id: "napkins",
-    kind: "action",
-    num: "06",
-    accent: "#c77dff",
-    menu: "Cotton, not throw-away",
-    eyebrow: "Action 06",
-    title: "Use cotton napkins.",
-    stat: { value: "20 s", label: "the working life of a paper napkin — a cotton one lasts a thousand meals" },
-    body: [
-      "A tree is grown, felled, pulped, bleached and shipped so you can wipe your mouth for twenty seconds.",
-      "A cotton one does that job for years, then retires as a rag. It rides along in a wash you were doing anyway.",
-      "Same logic wherever disposables hide: kitchen roll, tissues, plates, cups."
-    ],
-    todo: [
-      "Buy twelve cloth napkins. Give them a drawer.",
-      "Old towels and t-shirts become kitchen rags.",
-      "Handkerchief, not tissues. Real cup, not paper."
-    ],
-    pledge: "Cotton, not throw-away"
-  },
-
-  {
-    id: "food-waste",
-    kind: "action",
-    num: "07",
-    accent: "#90be6d",
-    menu: "Waste no food",
-    eyebrow: "Action 07",
-    title: "Waste no food.",
-    stat: { value: "8%", label: "of global greenhouse gases come from wasted food — more than double all aviation" },
-    body: [
-      "A third of the world's food is never eaten. Project Drawdown calls fixing that an emergency brake: less waste cuts methane fast.",
-      "Rich countries bin up to 35% of their food at home. A four-person US household throws out about $2,913 a year.",
-      "Every field, tanker and animal behind that food is spent for nothing."
-    ],
-    todo: [
-      "Plan the week. Shop from a list.",
-      "Leftovers first, at eye level. Freeze it before it turns.",
-      "Smell it and look at it. Best-before is a guess, not a verdict."
-    ],
-    pledge: "Waste no food"
   },
 
   {
     id: "flying",
     kind: "action",
-    num: "08",
+    num: "04",
     accent: "#577590",
     menu: "Fly less",
-    eyebrow: "Action 08",
-    title: "Fly much less.",
-    stat: { value: "1.6 t", label: "CO2e for one return transatlantic flight — more than a year of some people's total emissions" },
+    eyebrow: "Action 04",
+    title: "Fly way less.",
+    stat: { value: "1.6 t", label: "of CO2 for one return long-haul flight — more than a whole year of some people's emissions" },
     body: [
-      "Nothing you do in a day undoes a long-haul flight. One boarding pass can outweigh a year of careful shopping.",
-      "This one stings, because flying is how we see people. So spend your flights deliberately.",
-      "Fewer, longer, better trips beat many short hops."
+      "Nothing you do in a day cancels a long-haul flight. One boarding pass beats a year of careful shopping.",
+      "This one hurts, because flying is how you see people. So spend those flights on purpose.",
+      "Fewer trips, longer stays. Better trips anyway."
     ],
     todo: [
-      "Under about 6 to 8 hours by train? Take the train.",
-      "One long trip a year instead of three short ones. Stay longer.",
-      "Say no to the flight that exists for a two-hour meeting."
+      "Under 6 to 8 hours by train? Take the train.",
+      "One big trip a year instead of three weekend ones.",
+      "Kill the flight that exists for a two-hour meeting."
     ],
     pledge: "Fly less"
   },
@@ -238,132 +151,220 @@ const PAGES = [
   {
     id: "driving",
     kind: "action",
-    num: "09",
+    num: "05",
     accent: "#43aa8b",
     menu: "Drive less",
-    eyebrow: "Action 09",
+    eyebrow: "Action 05",
     title: "Get out of the car.",
-    stat: { value: "2.4 t", label: "CO2e saved per year by living without a car" },
+    stat: { value: "2.4 t", label: "of CO2 saved a year by living without a car" },
     body: [
-      "Car-free is one of the largest moves an individual in a rich country can make. Not everyone can. Almost everyone can drive less.",
-      "Most car trips are short, and short trips are where an engine is dirtiest.",
-      "Fewer cars also means quieter streets, cleaner air, and children who can cross them."
+      "Going car-free is one of the biggest moves you can make. Not everyone can. Everyone can drive less.",
+      "Most trips are short, and short trips are when an engine is dirtiest.",
+      "Fewer cars means quieter streets, cleaner air, kids who can cross the road."
     ],
     todo: [
-      "Under 5 km: bike, walk or bus. Reflex, not exception.",
-      "One car per household. Rent or share for the rare trip.",
-      "Next car: electric, and smaller than the last one."
+      "Under 5 km: bike, walk, bus. Make it the default.",
+      "One car per household. Rent or share for the rest.",
+      "Next car: electric, and smaller."
     ],
     pledge: "Drive less"
   },
 
   {
-    id: "clothes",
+    id: "beef",
     kind: "action",
-    num: "10",
-    accent: "#bc6c25",
-    menu: "Wear clothes longer",
-    eyebrow: "Action 10",
-    title: "Buy fewer clothes. Wear them longer.",
-    stat: { value: "10%", label: "of global carbon emissions come from fashion — more than all flights and shipping combined" },
+    num: "06",
+    accent: "#ef476f",
+    menu: "Drop the beef",
+    eyebrow: "Action 06",
+    title: "Drop the beef.",
+    stat: { value: "60 kg", label: "of CO2 per kg of beef. Peas: about 1 kg." },
     body: [
-      "Brands make about twice the clothing they did before 2000. The industry throws off 92 million tonnes of waste a year.",
-      "68% of fibres are synthetic, and washing them sheds microplastic into the ocean.",
-      "Donating is no escape hatch: Ghana takes 15 million used items a week, 40% unsellable."
+      "Biggest change on your plate. Nothing else in the shop comes close.",
+      "Methane from the cows is 49% of it. Water: 15,400 litres per kg, against 4,300 for chicken.",
+      "You do not have to be perfect. People who swapped only their beef cut their food footprint by about 48%."
     ],
     todo: [
-      "Before buying: will I wear this 30 times?",
-      "Repair it. A button is ten minutes.",
-      "Wash cold, skip the dryer. Clothes last longer too."
+      "Swap beef for beans, lentils or chicken this week.",
+      "Order the other thing on the menu once. See if you miss it.",
+      "Burgers: mushroom, bean, or a decent plant patty."
     ],
-    pledge: "Buy fewer clothes"
+    pledge: "No beef"
   },
 
   {
-    id: "home-energy",
+    id: "meat",
     kind: "action",
-    num: "11",
-    accent: "#f9c74f",
-    menu: "Clean up your home energy",
-    eyebrow: "Action 11",
-    title: "Clean up your home energy.",
-    stat: { value: "1 °C", label: "off the thermostat — the easiest cut in the house, and nobody notices" },
+    num: "07",
+    accent: "#f4845f",
+    menu: "Drop the rest",
+    eyebrow: "Action 07",
+    title: "Then drop the rest.",
+    stat: { value: "0.8 t", label: "of CO2 saved a year by eating plants instead of meat" },
     body: [
-      "The World Resources Institute puts home renewable energy alongside driving and flying. One switch, once, and it keeps paying.",
-      "Heating is the big number in most homes. Insulation is unglamorous and beats almost anything you can buy."
+      "Beef first, because it is the worst. But going fully plant-based is the biggest food change there is.",
+      "Meat is roughly ten times worse than beans per kilo. Land is the hidden half: less grazing, more forest left standing.",
+      "Flip the default. Plants unless you decide otherwise."
     ],
     todo: [
-      "Switch to a genuinely renewable electricity tariff today.",
-      "Draft strips, curtains, loft insulation. Cheapest wins first.",
-      "When the boiler or the car dies, replace it with the electric one."
+      "Plants are the default at home. Meat becomes a decision.",
+      "Learn three meat-free meals you actually love.",
+      "Five days a week, then six, then most."
     ],
-    pledge: "Clean home energy"
+    pledge: "Eat plants"
   },
 
   {
     id: "money",
     kind: "action",
-    num: "12",
+    num: "08",
     accent: "#277da1",
     menu: "Move your money",
-    eyebrow: "Action 12",
+    eyebrow: "Action 08",
     title: "Move your money.",
-    stat: { value: "£3,000", label: "of the average UK pension sits in fossil fuel companies" },
+    stat: { value: "£3,000", label: "of the average UK pension is invested in oil, gas and coal" },
     body: [
-      "Your savings are not sitting still. They are buying things, often oil, gas and coal.",
-      "Make My Money Matter put a green pension at 21 times the effect of going vegetarian, giving up flying and switching energy supplier combined.",
-      "Treat that number with care: campaign-commissioned, and it mixes two accounting methods. The direction holds."
+      "Your pension is not sitting in a vault. It is out buying things, often fossil fuels.",
+      "One campaign put a green pension at 21 times the effect of going veggie, quitting flying and switching energy supplier combined.",
+      "Take that number with a pinch of salt: the campaign paid for it, and it mixes two ways of counting. The direction is right, and it costs you one afternoon."
     ],
     todo: [
-      "Look up what your pension fund holds.",
-      "Switch to your provider's sustainable fund.",
-      "Move your bank away from fossil finance."
+      "Check what your pension fund actually holds.",
+      "Switch to the sustainable fund your provider already has.",
+      "Move your bank if it finances fossil fuels."
     ],
     pledge: "Green my money"
   },
 
   {
-    id: "voice",
+    id: "food-waste",
     kind: "action",
-    num: "13",
-    accent: "#9d4edd",
-    menu: "Vote and speak up",
-    eyebrow: "Action 13",
-    title: "Vote. Then keep pushing.",
-    stat: { value: "1", label: "vote, one email, one meeting — these change everyone's default at once" },
+    num: "09",
+    accent: "#90be6d",
+    menu: "Eat what you buy",
+    eyebrow: "Action 09",
+    title: "Eat what you buy.",
+    stat: { value: "8%", label: "of all global emissions come from food nobody eats — double the impact of all flying" },
     body: [
-      "WRI is direct: civic action ranks among the highest-impact things an individual does, because the world sets your options.",
-      "You take the train only if the train exists. The canteen has to cook the vegetarian option.",
-      "Personal and political change are not rivals. The first makes the second credible."
+      "A third of the world's food is never eaten. Fixing that cuts methane fast.",
+      "Rich countries bin up to 35% of their food at home. A family of four in the US throws out about $2,913 a year.",
+      "All the land, water and fuel behind that food, spent for nothing."
     ],
     todo: [
-      "Vote. Local elections too — that is where transport lives.",
-      "Send one short, real email to a representative.",
-      "Ask at work: menu, travel policy, pension, energy."
+      "Plan the week. Shop from a list.",
+      "Leftovers at the front of the fridge. Freeze it before it turns.",
+      "Look at it, smell it. Best-before is a guess."
     ],
-    pledge: "Vote and speak up"
+    pledge: "Waste no food"
   },
 
   {
-    id: "talk",
+    id: "home-energy",
     kind: "action",
-    num: "14",
-    accent: "#ff7b00",
-    menu: "Tell people why",
-    eyebrow: "Action 14",
-    title: "Tell people why.",
-    stat: { value: "59%", label: "believe recycling is their biggest lever. It is not. Most people are aiming at the wrong thing" },
+    num: "10",
+    accent: "#f9c74f",
+    menu: "Fix your home energy",
+    eyebrow: "Action 10",
+    title: "Fix your home energy.",
+    stat: { value: "1 °C", label: "off the thermostat. Easiest cut in the house, and nobody notices." },
     body: [
-      "The gap between what people think helps and what actually helps is enormous. Closing it costs one sentence.",
-      "No lecture needed. Silent virtue changes nobody: say the reason once, lightly, and move on.",
-      "This is the action that multiplies all the others."
+      "Getting your electricity from renewables ranks up there with flying and driving. One switch, once, and it keeps working.",
+      "Heating is the big number. Insulation is boring and beats almost anything you can buy."
     ],
     todo: [
-      "Say why when asked. Once, cheerfully, no sermon.",
-      "Share what worked, not what you gave up.",
-      "Cook for people. Nobody is argued out of beef; they are fed out of it."
+      "Switch to a genuinely renewable tariff today.",
+      "Draft strips, curtains, insulation. Cheapest first.",
+      "When the boiler dies, get a heat pump."
     ],
-    pledge: "Tell people why"
+    pledge: "Clean home energy"
+  },
+
+  {
+    id: "clothes",
+    kind: "action",
+    num: "11",
+    accent: "#bc6c25",
+    menu: "Wear your clothes out",
+    eyebrow: "Action 11",
+    title: "Wear your clothes out.",
+    stat: { value: "10%", label: "of global emissions come from fashion — more than flying and shipping combined" },
+    body: [
+      "Brands make about twice as much clothing as they did in 2000. The industry dumps 92 million tonnes of waste a year.",
+      "68% of fibres are plastic. Every wash sheds microplastic into the sea.",
+      "Donating is not a get-out. Ghana gets 15 million used items a week and 40% are unsellable."
+    ],
+    todo: [
+      "Before you buy: will I wear this 30 times?",
+      "Fix it. A button takes ten minutes.",
+      "Wash cold, skip the dryer. Clothes last longer."
+    ],
+    pledge: "Buy fewer clothes"
+  },
+
+  {
+    id: "packaging",
+    kind: "action",
+    num: "12",
+    accent: "#06d6a0",
+    menu: "Skip the packaging",
+    eyebrow: "Action 12",
+    title: "Skip the packaging.",
+    stat: { value: "7", label: "bits of plastic in one multipack of six small crisp bags" },
+    body: [
+      "A big bag full of little bags. You pay more, get less, and bin seven wrappers.",
+      "Recycling does not fix this. Not buying it does.",
+      "Every refusal is a message to the shop. Shelves follow tills."
+    ],
+    todo: [
+      "One big bag. Tip it into a jar at home.",
+      "Loose fruit and veg, not wrapped trays.",
+      "Bag, bottle, cup. Refill."
+    ],
+    pledge: "Skip the packaging"
+  },
+
+  {
+    id: "shower",
+    kind: "action",
+    num: "13",
+    accent: "#4cc9f0",
+    menu: "Short showers",
+    eyebrow: "Action 13",
+    title: "Cut the shower short.",
+    stat: { value: "150 L", label: "for a 10-minute shower on a normal 15 L/min head" },
+    body: [
+      "The water counts. The energy heating it counts more.",
+      "Normal heads run 12 to 15 litres a minute. The average shower is 7.8 minutes and about 60 litres.",
+      "Four minutes less a day is tens of thousands of litres a year, and a smaller bill."
+    ],
+    todo: [
+      "One song long. Out when it ends.",
+      "Low-flow head: 6 to 8 L/min. Same feel, half the water.",
+      "Tap off while you soap or shave. Fix the drip."
+    ],
+    pledge: "Short showers"
+  },
+
+  {
+    id: "napkins",
+    kind: "action",
+    num: "14",
+    accent: "#c77dff",
+    menu: "Ditch the paper",
+    eyebrow: "Action 14",
+    title: "Ditch the paper.",
+    stat: { value: "20 s", label: "is how long a paper napkin lives. A cotton one lasts a thousand meals." },
+    body: [
+      "A tree grown, cut, pulped, bleached and shipped so you can wipe your mouth for twenty seconds.",
+      "A cotton one does that job for years, then becomes a rag. It goes in a wash you were doing anyway.",
+      "Same story with kitchen roll, tissues, paper plates and paper cups."
+    ],
+    todo: [
+      "Buy twelve cloth napkins. Give them a drawer.",
+      "Old t-shirts and towels become cleaning rags.",
+      "Handkerchief, not tissues. Real cup, not paper."
+    ],
+    pledge: "No throw-aways"
   },
 
   {
@@ -371,11 +372,11 @@ const PAGES = [
     kind: "pledge",
     accent: "#ffd166",
     menu: "Your pledge",
-    eyebrow: "Now the part that counts",
-    title: "What are you actually doing?",
-    empty: "Nothing picked yet. Swipe back and tap 'I am in' on the ones you will really do. Two you keep beats fourteen you forget.",
+    eyebrow: "Now the real part",
+    title: "So what are you doing?",
+    empty: "Nothing picked yet. Swipe back and hit 'I am in' on the ones you will actually do. Two you keep beats fourteen you forget.",
     lede: "You picked these:",
-    outro: "Start this week, not next. Then tell one person. That is the whole method."
+    outro: "Start this week, not next. Then tell one person. That is the whole thing."
   },
 
   {
@@ -383,23 +384,24 @@ const PAGES = [
     kind: "sources",
     accent: "#8ecae6",
     menu: "Sources",
-    eyebrow: "Check the numbers",
+    eyebrow: "Check it yourself",
     title: "Sources",
-    lede: "Do not take any of this on trust. Every figure here comes from one of these.",
+    lede: "Do not take our word for it. Every number here comes from one of these.",
     items: [
-      { label: "Wynes & Nicholas 2017 — the highest-impact individual actions", url: "https://www.lunduniversity.lu.se/article/four-lifestyle-choices-most-reduce-your-carbon-footprint" },
-      { label: "World Resources Institute — climate-friendly choices, ranked", url: "https://www.wri.org/insights/climate-friendly-choices-ranked" },
-      { label: "WRI — the most impactful behaviour shifts", url: "https://www.wri.org/insights/climate-impact-behavior-shifts" },
-      { label: "Poore & Nemecek 2018 — emissions per kg of food (Our World in Data)", url: "https://ourworldindata.org/grapher/ghg-per-kg-poore" },
-      { label: "Our World in Data — food choice vs eating local", url: "https://ourworldindata.org/food-choice-vs-eating-local" },
-      { label: "Mekonnen & Hoekstra — water footprint of meat", url: "https://www.thepoultrysite.com/news/2016/04/how-much-water-does-it-take-to-produce-meat" },
-      { label: "Single-item substitutions in US diets (PMC)", url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8827079/" },
-      { label: "Project Drawdown — reduce food loss and waste", url: "https://drawdown.org/explorer/reduce-food-loss-waste" },
-      { label: "Nature Reviews Earth & Environment — the environmental price of fast fashion", url: "https://www.nature.com/articles/s43017-020-0039-9" },
-      { label: "Home Water Works — shower water use", url: "https://home-water-works.org/indoor-use/showers" },
-      { label: "Christakis & Fowler — social contagion, three degrees of influence", url: "https://arxiv.org/abs/1109.5235" },
-      { label: "World Economic Forum / Ipsos — what people think helps vs what does", url: "https://www.weforum.org/stories/2021/05/climate-action-change-behaviour-impact-survey/" },
-      { label: "Make My Money Matter — climate action report (the 21x claim)", url: "https://makemymoneymatter.co.uk/21x/" }
+      { label: "The biggest personal choices, ranked (Lund University)", url: "https://www.lunduniversity.lu.se/article/four-lifestyle-choices-most-reduce-your-carbon-footprint" },
+      { label: "Climate-friendly choices, ranked (World Resources Institute)", url: "https://www.wri.org/insights/climate-friendly-choices-ranked" },
+      { label: "Which behaviour shifts matter most (WRI)", url: "https://www.wri.org/insights/climate-impact-behavior-shifts" },
+      { label: "Emissions per kilo of food (Our World in Data)", url: "https://ourworldindata.org/grapher/ghg-per-kg-poore" },
+      { label: "What you eat beats eating local (Our World in Data)", url: "https://ourworldindata.org/food-choice-vs-eating-local" },
+      { label: "How much water meat takes to produce", url: "https://www.thepoultrysite.com/news/2016/04/how-much-water-does-it-take-to-produce-meat" },
+      { label: "Swapping only the beef cut diets by 48%", url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8827079/" },
+      { label: "Food waste, and why fixing it works fast (Project Drawdown)", url: "https://drawdown.org/explorer/reduce-food-loss-waste" },
+      { label: "The real price of fast fashion (Nature)", url: "https://www.nature.com/articles/s43017-020-0039-9" },
+      { label: "How much water a shower uses", url: "https://home-water-works.org/indoor-use/showers" },
+      { label: "How behaviour spreads three steps out (Christakis & Fowler)", url: "https://arxiv.org/abs/1109.5235" },
+      { label: "What people think helps, versus what does (WEF / Ipsos)", url: "https://www.weforum.org/stories/2021/05/climate-action-change-behaviour-impact-survey/" },
+      { label: "Almost everyone underestimates how many already agree (Nature)", url: "https://www.nature.com/articles/s41467-022-32412-y" },
+      { label: "The 21x green pension claim (Make My Money Matter)", url: "https://makemymoneymatter.co.uk/21x/" }
     ]
   }
 ];
