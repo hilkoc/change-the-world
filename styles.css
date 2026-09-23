@@ -111,6 +111,23 @@ body {
   color: var(--ink-dim);
 }
 
+/* visitor count, feedback page only. Fixed, so it holds the corner while the
+   page scrolls, and one line below the page counter which shares that corner. */
+.visits {
+  position: fixed;
+  top: calc(var(--topbar) + var(--safe-t) - 2px);
+  right: 14px;
+  z-index: 29;
+  margin: 0;
+  pointer-events: none;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--ink-dim);
+}
+
+.visits[hidden] { display: none; }
+
 /* ---------- deck ---------- */
 
 .deck {
@@ -311,6 +328,7 @@ p { margin: 0; }
 }
 
 .pledge-btn:active { transform: scale(0.97); }
+.pledge-btn:disabled { opacity: 0.45; cursor: default; }
 
 .pledge-btn[aria-pressed="true"] {
   background: var(--accent);
@@ -318,6 +336,77 @@ p { margin: 0; }
 }
 
 .pledge-btn .tick { font-size: 1.1em; line-height: 1; }
+
+/* ---------- feedback form ---------- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.form[hidden] { display: none; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink-dim);
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 11px 13px;
+  color: var(--ink);
+  font: inherit;
+  /* 16px or larger: iOS zooms the page in on anything smaller */
+  font-size: 16px;
+}
+
+.field textarea {
+  min-height: 7rem;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.field input:focus-visible,
+.field textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+/* the honeypot: off-screen for bots to find, never announced to people */
+.hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form-status {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 14px;
+  color: var(--ink-dim);
+}
+
+.form-status.ok {
+  color: var(--accent);
+  font-weight: 700;
+}
 
 /* ---------- hint ---------- */
 

@@ -35,9 +35,19 @@
   var sheetBody = document.getElementById("sheetBody");
   var sheetTitle = document.getElementById("sheetTitle");
   var sheetClose = document.getElementById("sheetClose");
+  var visitsEl = document.getElementById("visits");
 
   var STORE_KEY = "wctw:pledges";
   var DAYS = ["Today", "Tomorrow", "This weekend", "Monday"];
+
+  /* Replace both with the real values. GOAT_CODE is the GoatCounter site code,
+     the same one used in the count.js snippet in index.html. WEB3FORMS_KEY is
+     public by design: it only lets a browser post to the form's inbox. */
+  var GOAT_CODE = "hilkoc";
+  var WEB3FORMS_KEY = "bbf45009-3b5d-4858-a29a-59f87ad3f4be";
+
+  var COUNT_URL = "https://" + GOAT_CODE + ".goatcounter.com/counter/TOTAL.json";
+  var FORM_URL = "https://api.web3forms.com/submit";
 
   var index = 0;
   var pageEls = [];
@@ -48,6 +58,8 @@
   var chapters = [];
   var suppressHash = false;
   var sheetOpen = false;
+  var home = 0;         /* the page a bare URL opens on: the hero, not page one */
+  var visitsReady = false;
 
   var reduceMotion = window.matchMedia
     && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -366,6 +378,128 @@
     inner.appendChild(resetRow);
   }
 
+  /* ---------- feedback page ---------- */
+
+  function addField(form, name, type, label, hint) {
+    var wrap = el("div", "field");
+    var input = document.createElement(type === "textarea" ? "textarea" : "input");
+    input.id = "f-" + name;
+    input.name = name;
+    if (input.tagName === "INPUT") input.type = type;
+    if (hint) input.autocomplete = hint;
+    var lab = el("label", null, label);
+    lab.htmlFor = input.id;
+    wrap.appendChild(lab);
+    wrap.appendChild(input);
+    form.appendChild(wrap);
+    return input;
+  }
+
+  /* posted with fetch rather than a plain form post, so the reader stays on
+     the page and reads the thanks line instead of landing on the provider */
+  function sendFeedback(page, form, fields, btn, status) {
+    var message = fields.message.value.trim();
+    if (!message) {
+      status.className = "form-status";
+      status.textContent = page.empty;
+      fields.message.focus();
+      return;
+    }
+
+    var email = fields.email.value.trim();
+    var body = {
+      access_key: WEB3FORMS_KEY,
+      subject: "change-the-world: feedback",
+      from_name: "We change the world",
+      name: fields.name.value.trim() || "anonymous",
+      message: message,
+      botcheck: fields.botcheck.value
+    };
+    if (email) {
+      body.email = email;
+      body.replyto = email;
+    }
+
+    btn.disabled = true;
+    btn.textContent = page.sending;
+    status.className = "form-status";
+    status.textContent = "";
+
+    fetch(FORM_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (res) {
+      return res.json();
+    }).then(function (data) {
+      if (!data || data.success !== true) throw new Error("rejected");
+      form.hidden = true;
+      status.className = "form-status ok";
+      status.textContent = page.thanks;
+      buzz(10);
+    }).catch(function () {
+      btn.disabled = false;
+      btn.textContent = page.send;
+      status.className = "form-status";
+      status.textContent = page.fail;
+    });
+  }
+
+  function renderFeedbackPage(section, page) {
+    var inner = el("div", "page-inner");
+    section.appendChild(inner);
+
+    inner.appendChild(el("p", "eyebrow", page.eyebrow));
+    inner.appendChild(el("h2", null, page.title));
+    inner.appendChild(el("p", "body", page.lede));
+
+    var form = el("form", "form");
+    form.noValidate = true;
+
+    var fields = {
+      name: addField(form, "name", "text", page.fields.name, "name"),
+      email: addField(form, "email", "email", page.fields.email, "email"),
+      message: addField(form, "message", "textarea", page.fields.message)
+    };
+
+    /* honeypot: bots fill it in, people never see it */
+    fields.botcheck = addField(form, "botcheck", "text", "Leave this empty");
+    fields.botcheck.parentNode.className = "field hp";
+    fields.botcheck.tabIndex = -1;
+    fields.botcheck.autocomplete = "off";
+    fields.botcheck.setAttribute("aria-hidden", "true");
+
+    var row = el("div", "btn-row");
+    var btn = el("button", "pledge-btn", page.send);
+    btn.type = "submit";
+    row.appendChild(btn);
+    form.appendChild(row);
+
+    var status = el("p", "form-status");
+    status.setAttribute("role", "status");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      sendFeedback(page, form, fields, btn, status);
+    });
+
+    inner.appendChild(form);
+    inner.appendChild(status);
+  }
+
+  /* the visitor count is decoration: if it fails, the page carries on without it */
+  function loadVisits(label) {
+    if (!visitsEl || GOAT_CODE === "YOURCODE") return;
+    fetch(COUNT_URL).then(function (res) {
+      return res.json();
+    }).then(function (data) {
+      if (!data || !data.count) return;
+      visitsEl.textContent = data.count + " " + label;
+      visitsReady = true;
+      if (currentPage().kind === "feedback") visitsEl.hidden = false;
+    }).catch(function () { /* no counter, no problem */ });
+  }
+
   function buildPage(page, i) {
     var section = el("section", "page " + page.kind);
     section.id = "page-" + page.id;
@@ -380,6 +514,12 @@
       return section;
     }
 
+    /* built once, never re-rendered: a re-render would wipe what is being typed */
+    if (page.kind === "feedback") {
+      renderFeedbackPage(section, page);
+      return section;
+    }
+
     var inner = el("div", "page-inner");
     section.appendChild(inner);
 
@@ -389,7 +529,7 @@
       if (page.hint) {
         var hint = el("p", "hint");
         hint.appendChild(el("span", "arrow", "←"));
-        hint.appendChild(el("span", null, "Swipe left to start. Swipe up for the proof."));
+        hint.appendChild(el("span", null, page.hint));
         inner.appendChild(hint);
       }
       return section;
@@ -589,6 +729,7 @@
     countUp(current);
 
     proofBtn.hidden = !(page.proof && page.proof.length);
+    if (visitsEl) visitsEl.hidden = !(visitsReady && page.kind === "feedback");
 
     setHash(page.id, push);
     if (push) buzz(6);
@@ -598,9 +739,17 @@
   function next() { if (index < PAGES.length - 1) goTo(index + 1, true); }
   function prev() { if (index > 0) goTo(index - 1, true); }
 
+  function homeIndex() {
+    for (var i = 0; i < PAGES.length; i++) {
+      if (PAGES[i].kind === "hero") return i;
+    }
+    return 0;
+  }
+
+  /* a bare URL opens the hero, not page one: the feedback page sits to its left */
   function indexFromHash() {
     var id = decodeURIComponent(location.hash.replace(/^#/, "")).replace(/^page-/, "");
-    if (!id) return 0;
+    if (!id) return home;
     for (var i = 0; i < PAGES.length; i++) {
       if (PAGES[i].id === id) return i;
     }
@@ -617,6 +766,12 @@
   var intent = null;    /* "page" | "sheet-open" | "sheet-close" | "chapter" */
   var active = false;
   var dragged = false;  /* a drag that ends on a link must not also click it */
+
+  /* a drag inside a form control belongs to the control: sideways selects text,
+     down scrolls the textarea, neither moves the deck */
+  function inForm(node) {
+    return !!(node && node.closest && node.closest("input, textarea, select"));
+  }
 
   function atBottom(section) {
     return section.scrollTop + section.clientHeight >= section.scrollHeight - 2;
@@ -750,6 +905,7 @@
 
   function onTouchStart(e) {
     if (e.touches.length !== 1) { gestureCancel(e.timeStamp); return; }
+    if (inForm(e.target)) { active = false; return; }
     var t = e.touches[0];
     gestureStart(t.clientX, t.clientY, e.timeStamp);
   }
@@ -767,6 +923,7 @@
   function onPointerDown(e) {
     if (e.pointerType === "touch") return;
     if (e.button !== 0) return;
+    if (inForm(e.target)) { active = false; return; }
     gestureStart(e.clientX, e.clientY, e.timeStamp);
   }
 
@@ -805,6 +962,11 @@
   /* ---------- wiring ---------- */
 
   build();
+  home = homeIndex();
+
+  PAGES.forEach(function (page) {
+    if (page.kind === "feedback") loadVisits(page.visitsLabel);
+  });
 
   deck.addEventListener("touchstart", onTouchStart, { passive: true });
   deck.addEventListener("touchmove", onTouchMove, { passive: false });

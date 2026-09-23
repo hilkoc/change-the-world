@@ -4,7 +4,7 @@
    the next one; swipe down jumps a whole chapter.
 
    Page fields:
-     kind    hero | idea | action | pledge | sources
+     kind    feedback | hero | idea | action | pledge | sources
      chapter id from CHAPTERS
      stat    the one number, plus what it means
      body    2-3 short paragraphs
@@ -15,6 +15,7 @@
      proof   the citations behind this page; the sources page is built from these */
 
 const CHAPTERS = [
+  { id: "say", label: "Your say" },
   { id: "why", label: "Why it matters" },
   { id: "voice", label: "Your voice" },
   { id: "money", label: "Your money" },
@@ -24,6 +25,28 @@ const CHAPTERS = [
 
 const PAGES = [
   {
+    id: "feedback",
+    kind: "feedback",
+    chapter: "say",
+    accent: "#8ecae6",
+    menu: "Your say",
+    eyebrow: "Your turn",
+    title: "What would you add?",
+    lede: "This deck is missing something. Tell us what: a number that is wrong, an action that works, a page that should exist. Good ones get added.",
+    fields: {
+      name: "Your name (optional)",
+      email: "Email, if you want an answer (optional)",
+      message: "Your idea, in a line or two"
+    },
+    send: "Send it",
+    sending: "Sending…",
+    empty: "Write something first.",
+    thanks: "Thanks, message sent.",
+    fail: "That did not go through. Try again in a minute.",
+    visitsLabel: "visitors"
+  },
+
+  {
     id: "start",
     kind: "hero",
     chapter: "why",
@@ -31,7 +54,7 @@ const PAGES = [
     menu: "We change the world!",
     title: "We change the world!",
     lede: "Our actions change the future of our children, for better or for worse. ",
-    hint: true
+    hint: "Swipe left to start. Swipe right to tell us what you think."
   },
 
   {
