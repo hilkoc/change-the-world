@@ -31,12 +31,12 @@ const PAGES = [
     accent: "#8ecae6",
     menu: "Your say",
     eyebrow: "Your turn",
-    title: "What would you add?",
-    lede: "This deck is missing something. Tell us what: a number that is wrong, an action that works, a page that should exist. Good ones get added.",
+    title: "We'd love to hear from you!",
+    lede: "How can we make this deck better? Tell us about an action that we should all do to make the world better. Any other feedback is welcome too.",
     fields: {
       name: "Your name (optional)",
       email: "Email, if you want an answer (optional)",
-      message: "Your idea, in a line or two"
+      message: "Your idea, or feedback"
     },
     send: "Send it",
     sending: "Sending…",
@@ -91,7 +91,7 @@ const PAGES = [
       "When one person put on weight, their friends were 57% more likely to follow. Cooperation moves the same way, three steps out.",
       "You are never changing one life. You are changing a crowd you will never meet."
     ],
-    note: "Some of that is people picking similar friends, not pure influence. The experiments still show real spread.",
+    note: "Group dynamics have strong impact on people. Once you change your behaviour, more will follow",
     proof: [
       { claim: "Three degrees of influence; the 57% figure comes from the Framingham social network data. Critics argue part of the pattern is clustering rather than influence, which is why the randomised cooperation experiments matter.", source: "Christakis & Fowler, social contagion review", url: "https://arxiv.org/abs/1109.5235" }
     ]
@@ -709,9 +709,9 @@ const PAGES = [
     menu: "Your pledge",
     eyebrow: "Now the real part",
     title: "So what are you doing?",
-    empty: "Nothing picked yet. Swipe back and answer one of the questions with 'Yes, I am in'. Two you keep beats eighteen you forget.",
+    empty: "Nothing picked yet. Swipe back and answer one of the questions with 'Yes, I am in'.",
     lede: "You said yes to these:",
-    outro: "Say the start day out loud to someone today. A plan with a time and a witness is the one that survives."
+    outro: "Talk to others about your pledge. A plan with a witness is more likely to succeed."
   },
 
   {
