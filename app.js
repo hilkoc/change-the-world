@@ -40,13 +40,14 @@
   var STORE_KEY = "wctw:pledges";
   var DAYS = ["Today", "Tomorrow", "This weekend", "Monday"];
 
-  /* Replace both with the real values. GOAT_CODE is the GoatCounter site code,
-     the same one used in the count.js snippet in index.html. WEB3FORMS_KEY is
-     public by design: it only lets a browser post to the form's inbox. */
-  var GOAT_CODE = "hilkoc";
+  /* WEB3FORMS_KEY is public by design: it only lets a browser post to the form's inbox. */
   var WEB3FORMS_KEY = "bbf45009-3b5d-4858-a29a-59f87ad3f4be";
-
-  var COUNT_URL = "https://" + GOAT_CODE + ".goatcounter.com/counter/TOTAL.json";
+  
+  var GOAT_CODE = "hilkoc";
+  /* Count this page only, not every path on the account: GoatCounter keeps a
+     separate tally per path, and the counter endpoint takes the path encoded. */
+  var COUNT_URL = "https://" + GOAT_CODE + ".goatcounter.com/counter/"
+    + encodeURIComponent(location.pathname) + ".json";
   var FORM_URL = "https://api.web3forms.com/submit";
 
   var index = 0;

@@ -36,8 +36,11 @@ feedback form reports that it could not send.
 | `app.js`, `WEB3FORMS_KEY` | `YOUR-ACCESS-KEY` | The [Web3Forms](https://web3forms.com) access key mailed to the form's delivery address |
 
 In GoatCounter, turn on **Settings → Allow adding visitor counts on your website**. It
-is off by default and without it `/counter/TOTAL.json` returns nothing, so the number
+is off by default and without it the `/counter/` endpoint returns nothing, so the number
 never appears.
+
+The counter is per page: `app.js` asks for `location.pathname`, not the account total, so
+a second site under the same GoatCounter code keeps its own separate number.
 
 The Web3Forms access key is public by design — it is in the client JavaScript and only
 lets a browser post into that one inbox. The delivery address itself is never in the
@@ -146,7 +149,7 @@ Two calls, both on the feedback side of the deck, nothing else:
 
 - **GoatCounter** counts one pageview per load, from the `count.js` snippet in
   `index.html`. No cookies, no cross-site identifier. The feedback page then reads back
-  the site total from `/counter/TOTAL.json` and shows it top right; if that request
+  this page's own count from `/counter/<path>.json` and shows it top right; if that request
   fails the number stays hidden and nothing else changes.
 - **Web3Forms** receives the feedback form, and only when the reader presses send. It is
   a `fetch` POST of JSON to `https://api.web3forms.com/submit`, so the reader stays on
