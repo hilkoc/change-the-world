@@ -1,10 +1,16 @@
 # We change the world!
 
-A mobile-first, swipeable static site that argues one thing: individual behaviour is
-the lever you actually control, it spreads to the people around you, and what you buy
-is a vote nobody counts unless you cast it. Twenty-eight pages in six chapters, ending
-in a pledge the reader picks and dates themselves. A feedback page sits to the left of
-the landing page, so the deck can be argued back at.
+A mobile-first, swipeable static site that argues one thing: a committed quarter of any
+group flips what that group treats as normal, so the actions worth taking are the ones
+that only work when many people take them together. Thirty-eight pages in nine chapters,
+ending in a pledge the reader picks and dates themselves. A feedback page sits to the
+left of the landing page, so the deck can be argued back at.
+
+Pages earn their place by that test. A habit that helps only the person doing it —
+a shorter shower, a cloth napkin — is off the deck, however virtuous. What is on it:
+refusals with a named replacement (beef, the haul, the betting app, the bank that funds
+coal), and the two numbers that say how many of us are needed (25% to flip a norm, 3.5%
+to win a campaign).
 
 Live at <https://hilkoc.github.io/change-the-world/>.
 
@@ -108,6 +114,7 @@ all pick it up automatically.
   norm: "More and more people already do this.",   // optional dynamic norm
   note: "The caveat, if the evidence has one.",     // optional
   todo: ["Three steps.", "Each one line.", "Each naming the replacement."],
+  todoTitle: "Stop these",                          // optional, "Do this" otherwise
   ask:  "Will you compost this week?",              // the question
   plan: "On Saturday I put a tub under the sink.",  // the if-then, shown once pledged
   pledge: "Compost",                                // omit to leave it off the pledge page
@@ -132,25 +139,42 @@ per page if you want to check.
 - **Every number is checkable.** Each figure lives in a `proof` entry with its source;
   the sources page is generated from those entries, so a page and its citation cannot
   drift apart. Swipe up on any page to see them.
-- **Contested numbers keep their caveat visible** — the 21x green pension figure, the
-  observational grade of the ultra-processed food evidence, the failed replication of the
-  dynamic-norm effect, and the fact that the EU state-aid cases against Starbucks, Amazon
-  and Fiat were annulled while only Apple's was upheld.
+- **Only collective actions.** The test for a page is whether it changes anything when
+  a quarter of a group does it. That is why `shower`, `napkins` and `packaging` were cut.
+- **Contested numbers keep their caveat visible** — the observational grade of the
+  ultra-processed food evidence, the failed replication of the dynamic-norm effect, the
+  cross-sectional design behind the bedroom-phone odds ratios, the age of the Facebook
+  rollout study, the contested evidence on school phone bans, and Chenoweth's own warning
+  that 3.5% is a rule of thumb rather than a law.
+- **One lever per page.** `rainforest` is about beef and the soy that feeds it, and stops
+  there. Palm oil is deliberately absent: the evidence on boycotting it is contested, and
+  a hedged paragraph would have cost the page the only thing it has, which is one clear
+  refusal with one clear replacement.
 
 ## Pledges
 
 Tapping **Yes, I am in** stores the page `id` in `localStorage` under `wctw:pledges`,
 along with the start day chosen on the pledge page. The pledge page counts them back,
-repeats each plan, and offers a share. Pledges never leave the browser.
+repeats each plan, and offers a share. The pledges themselves never leave the browser.
+
+A yes also fires one anonymous GoatCounter event at `/pledge/<id>`, and the page reads
+that path's count back from the same public counter endpoint the visitor count uses,
+showing "N people are already in" under the button. It is fetched when the reader
+reaches the page, not for all pages at load, and cached per session. If the counter is
+blocked or fails, the line stays hidden and nothing else changes.
 
 ## What the site sends where
 
-Two calls, both on the feedback side of the deck, nothing else:
+Three calls, nothing else:
 
 - **GoatCounter** counts one pageview per load, from the `count.js` snippet in
   `index.html`. No cookies, no cross-site identifier. The feedback page then reads back
   this page's own count from `/counter/<path>.json` and shows it top right; if that request
   fails the number stays hidden and nothing else changes.
+- **GoatCounter again, on a yes.** One event per new pledge at `/pledge/<id>`, with the
+  pledge label as its title. Un-pledging sends nothing. Turning a pledge into a number
+  other readers can see is the point: this deck's whole argument is that people move when
+  they can see other people moving.
 - **Web3Forms** receives the feedback form, and only when the reader presses send. It is
   a `fetch` POST of JSON to `https://api.web3forms.com/submit`, so the reader stays on
   the page and gets a "Thanks, message sent." line instead of the provider's own page. A

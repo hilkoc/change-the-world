@@ -299,6 +299,15 @@ p { margin: 0; }
   padding-left: 11px;
 }
 
+/* how many other people already said yes to this page */
+.tally {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--accent);
+  opacity: 0.85;
+}
+
 .norm {
   font-size: 13.5px;
   line-height: 1.35;
@@ -574,13 +583,14 @@ p { margin: 0; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   flex: 1 1 auto;
   overflow: hidden;
 }
 
+/* small, because the deck is long: 38 dots have to fit a phone's width */
 .dot {
-  width: 5px; height: 5px;
+  width: 4px; height: 4px;
   padding: 0;
   border: 0;
   border-radius: 50%;

@@ -50,6 +50,11 @@
     + encodeURIComponent(location.pathname) + ".json";
   var FORM_URL = "https://api.web3forms.com/submit";
 
+  /* Saying yes sends one GoatCounter event, so a page can show how many others
+     already said it. The crowd is the argument the deck is making. */
+  var PLEDGE_PATH = "/pledge/";
+  var pledgeCounts = {};
+
   var index = 0;
   var pageEls = [];
   var dotEls = [];
@@ -255,6 +260,55 @@
     parent.appendChild(wrap);
   }
 
+  function pledgeCountUrl(id) {
+    return "https://" + GOAT_CODE + ".goatcounter.com/counter/"
+      + encodeURIComponent(PLEDGE_PATH + id) + ".json";
+  }
+
+  /* one event per new yes; taking a pledge back is not counted down */
+  function countPledge(page) {
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    try {
+      window.goatcounter.count({
+        path: PLEDGE_PATH + page.id,
+        title: "Pledge: " + page.pledge,
+        event: true
+      });
+    } catch (e) { /* counting is decoration */ }
+  }
+
+  function showTally(node, count) {
+    var n = parseInt(String(count).replace(/\D/g, ""), 10);
+    if (!n) return;
+    node.textContent = n === 1 ? "1 person is already in"
+      : count + " people are already in";
+    node.hidden = false;
+  }
+
+  /* fetched when the page is reached, not at build time: one request, not thirty */
+  function loadPledgeCount(section, page) {
+    if (!page.pledge || GOAT_CODE === "YOURCODE") return;
+    var node = section.querySelector(".tally");
+    if (!node) return;
+    if (pledgeCounts[page.id]) {
+      showTally(node, pledgeCounts[page.id]);
+      return;
+    }
+    fetch(pledgeCountUrl(page.id)).then(function (res) {
+      return res.ok ? res.json() : null;
+    }).then(function (data) {
+      if (!data || !data.count) return;
+      pledgeCounts[page.id] = data.count;
+      showTally(node, data.count);
+    }).catch(function () { /* no counter, no problem */ });
+  }
+
+  function bumpTally(node, id) {
+    var n = parseInt(String(pledgeCounts[id] || "0").replace(/\D/g, ""), 10) + 1;
+    pledgeCounts[id] = String(n);
+    showTally(node, pledgeCounts[id]);
+  }
+
   function addAsk(parent, page) {
     var picked = isPledged(page.id);
 
@@ -273,13 +327,20 @@
     var plan = el("p", "plan", page.plan || "");
     plan.hidden = !picked || !page.plan;
 
+    var tally = el("p", "tally");
+    tally.hidden = true;
+
     btn.addEventListener("click", function () {
       var now = togglePledge(page.id);
       btn.setAttribute("aria-pressed", now ? "true" : "false");
       tick.hidden = !now;
       label.textContent = now ? "I am in" : "Yes, I am in";
       plan.hidden = !now || !page.plan;
-      if (now) buzz(10);
+      if (now) {
+        buzz(10);
+        countPledge(page);
+        bumpTally(tally, page.id);
+      }
       say(now ? "Yes to: " + page.pledge : "Removed: " + page.pledge);
     });
 
@@ -287,6 +348,7 @@
     row.appendChild(btn);
     parent.appendChild(row);
     parent.appendChild(plan);
+    parent.appendChild(tally);
   }
 
   function sharePledges(chosen, day) {
@@ -562,7 +624,7 @@
 
     if (page.todo) {
       var box = el("div");
-      box.appendChild(el("p", "todo-title", "Do this"));
+      box.appendChild(el("p", "todo-title", page.todoTitle || "Do this"));
       var ul = el("ul", "todo");
       page.todo.forEach(function (text) {
         ul.appendChild(el("li", null, text));
@@ -728,6 +790,7 @@
     current.scrollTop = 0;
     if (current.dataset.dynamic) renderPledgePage(current, page);
     countUp(current);
+    loadPledgeCount(current, page);
 
     proofBtn.hidden = !(page.proof && page.proof.length);
     if (visitsEl) visitsEl.hidden = !(visitsReady && page.kind === "feedback");
