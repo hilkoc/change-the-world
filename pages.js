@@ -66,8 +66,8 @@ const PAGES = [
     accent: "#ffd166",
     menu: "We change the world!",
     title: "We change the world!",
-    lede: "Not by recycling harder. By enough of us refusing the same thing at the same time.",
-    hint: "Swipe left to start. Swipe right to tell us what you think."
+    lede: "Our actions change the future of our children, for better or for worse.",
+    hint: "Swipe left to start. Swipe right to share your ideas."
   },
 
   {
@@ -82,9 +82,9 @@ const PAGES = [
     body: [
       "You think you are outnumbered. You are not. Two out of three people want this, and almost everybody guesses the opposite.",
       "So everyone keeps quiet and waits for a law, a leader, a neighbour. Silence looks exactly like disagreement.",
-      "Go first. Say why out loud. That is the whole trick."
+      "Go first, make positive changes, and loudly say why."
     ],
-    note: "Your voice counts for more than your footprint ever will.",
+    note: "Your voice and actions matter, much more than you think.",
     proof: [
       { claim: "80–90% underestimate support; 66–80% back the policies, people guess 37–43%. Representative US sample, n = 6,119.", source: "Sparkman, Geiger & Weber 2022, Nature Communications", url: "https://www.nature.com/articles/s41467-022-32412-y" }
     ]
@@ -104,7 +104,7 @@ const PAGES = [
       "When one person put on weight, their friends were 57% more likely to follow. Cooperation moves the same way, three steps out.",
       "You are never changing one life. You are changing a crowd you will never meet."
     ],
-    note: "Copying is not weakness. It is how people learn. Give them something good to copy.",
+    note: "Copying behaviour is what people do and how people learn. Lead by example.",
     proof: [
       { claim: "Three degrees of influence; the 57% figure comes from the Framingham social network data. Critics argue part of the pattern is clustering rather than influence, which is why the randomised cooperation experiments matter.", source: "Christakis & Fowler, social contagion review", url: "https://arxiv.org/abs/1109.5235" }
     ]
@@ -166,7 +166,7 @@ const PAGES = [
       "Not a lecture. One sentence, the real reason, then change the subject."
     ],
     todo: [
-      "When someone asks, tell them straight. No sermon.",
+      "When someone asks, tell them straight.",
       "Post the swap you made, not the thing you gave up.",
       "Cook for your friends. Nobody argues with good food."
     ],
@@ -192,11 +192,11 @@ const PAGES = [
     body: [
       "A better world is not only a cooler one. It is one where people are decent to each other.",
       "Loneliness moves through a network like any other habit. So does the opposite. You hand out one of the two every day.",
-      "You are also asking people to change how they eat and travel. Nobody takes that from someone rude."
+      "Small acts of kindness are little effort, but can mean a lot to those around you."
     ],
     todo: [
       "Learn the name of the person who serves you.",
-      "Let the car in. Hold the door. Say thanks out loud.",
+      "Hold the door. Say thanks out loud.",
       "Say the nice thing you were only thinking."
     ],
     ask: "Will you make one stranger's day better today?",
@@ -960,7 +960,7 @@ const PAGES = [
     title: "The no list.",
     body: [
       "The whole deck, on one screen. Screenshot it, send it to one person.",
-      "Every no has a yes beside it. That is the only reason any of them work."
+      "Every no has a yes beside it. Even the biggest journey starts with a single step."
     ],
     todoTitle: "Stop these",
     todo: [
@@ -972,7 +972,7 @@ const PAGES = [
       "No single-use bottle. Tap water, free.",
       "No phone in the bedroom. Alarm clock."
     ],
-    note: "Pick one. Not all seven. One, starting this week — and tell somebody which."
+    note: "Pick one. One, starting this week — and tell somebody which."
   },
 
   {
@@ -996,6 +996,6 @@ const PAGES = [
     menu: "Sources",
     eyebrow: "Check it yourself",
     title: "Sources",
-    lede: "Do not take our word for it. Every number in this deck comes from one of these."
+    lede: "Every number in this deck comes from one of these."
   }
 ];
